@@ -16,25 +16,32 @@
     (robot-at room1)
 
     (thermal-reading room1 blue)
-    (chemical-level room1 low)
-    
     (thermal-reading room2 orange)
-    (chemical-level room2 low)
-
     (thermal-reading room3 yellow)
-    (chemical-level room3 low)
-
     (thermal-reading room4 green)
-    (chemical-level room4 medium)
-
     (thermal-reading room5 red)
-    (chemical-level room5 high)
+
+    (chemical-level-alive room1 low)    
+    (chemical-level-alive room2 low)
+    (chemical-level-alive room3 low)
+    (chemical-level-alive room4 low)
+    (chemical-level-alive room5 high)
+
+    (chemical-level-deceased room1 low)
+    (chemical-level-deceased room2 low)
+    (chemical-level-deceased room3 high)
+    (chemical-level-deceased room4 low)
+    (chemical-level-deceased room5 low)
+
 
     (visibility room1 probability1)
     (visibility room2 probability3)
     (visibility room3 probability2)
     (visibility room4 probability4)
     (visibility room5 probability5)
+
+    
+
 
     
 

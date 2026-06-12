@@ -8,8 +8,10 @@
 
 (:constants
     red orange yellow green blue - thermal-signature
-    high medium low - CO2-Ammonia-level
+    high medium low - CO2-level
+    high medium low - ammonia-level
     probability1 probability2 probability3 probability4 probability5 - visibility-level
+    lowdB 
 )
 
 (:predicates 
@@ -18,13 +20,15 @@
     (oxygen-supply)
     (connected ?loc1 ?loc2 - location)
     (thermal-reading ?loc - location ?reading - thermal-signature)
-    (chemical-level ?loc - location ?level - CO2-Ammonia-level)
+    (chemical-level ?loc - location ?level - CO2-level)
+    (chemical-level-alive ?loc - location ?level - ammonia-level)
+    (chemical-level-deceased ?loc - location ?level - ammonia-level)
     (cleared-room ?loc - location) 
     (visibility ?loc - location ?vis - visibility-level)
 )
 
 (:action scan 
-    :parameters (?loc - location ?level - CO2-Ammonia-level ?reading - thermal-signature ?vis - visibility-level)
+    :parameters (?loc - location ?level - CO2-level ?reading - thermal-signature ?vis - visibility-level)
     :precondition (and
         (robot-at ?loc)
         (thermal-reading ?loc ?reading)
@@ -39,7 +43,7 @@
 
 
 (:action locate 
-    :parameters (?loc - location ?reading - thermal-signature ?level - CO2-Ammonia-level ?vis - visibility-level)
+    :parameters (?loc - location ?reading - thermal-signature ?level - CO2-level ?vis - visibility-level)
     
     :precondition (and 
         (cleared-room ?loc)
