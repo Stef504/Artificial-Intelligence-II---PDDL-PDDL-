@@ -59,6 +59,7 @@
     - assesing victimes vitals , fixed with the use of the chemical sensor
     - scenario of signal lost and having to retrace steps so that all the information gathered can be sent , attempting to fix with disabling move from starting again and first having to check whether vitals were taken before moving to a better signal if a better signal is needed
     - Retraced steps because the addition of durative actions messed up the entire plan - 
+    - Adding a function to monitor battery life , can not  be done. Durative actions for every action does not produce a plan and mutiple attempts have been made to fix it and it still does not work. 
 
 With this information further assumptions have to be made about the world, such that the problem should now be able to distinguish between a dead or alive person. And there has to be a level of hierarchy to better understand the system. For example: Enter room -> listen for noise (human dB ranges from), turn in direction of noise, thermal scan if red+ plus then good sign, test chemical levels (which increase per m closer to victim), if levels indicate alive victim great move towars it, take photos and let the system decide the type of victim and how badly trapped they are, to rescue either pin location or if lost signal retrace steps to get back signal which will call out to SAR teams on which path it took and where it found the victim
 
