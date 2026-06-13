@@ -8,12 +8,21 @@
 ## Q1- Basic PDDL Model
 
 1. Instance with known location
+    1. Known location
+      - Since the location of the victim is known, no explicit exploration is required for each room
+      - Instead the robot simply navigates to the known room
+      - And examines their health    
+      - Rescue processes involve supplying oxygen since SAR teams would already have location of the victim 
 
 
 2. Instance requiring exploration
     - Known topology means safe assumption of room connections
     - Four techqniues are used to identify the presence of a human:
-    - 
+
+
+    # Exploration: 
+    - Since the location is not known the robot has to go into each room, perform the respective sensing actions (described below) before it can move onto the next room.
+  
       1. Chemical Sensor:
            - Allows the robot to differentiate between living and deceased victims through a "fuzzy logic algorithm". This technology was implemented in a robot named SMURF. For living victims, a specific requirement had to be satisfied: a void concentration at least 10 times more than the ambient air background, indicating that the robot is situated in an enclosed environment where volatile organic compounds are more concentrated and isolated from external influences. Humans release volatile organic compounds (VOCs), which are present in faeces, urine, breath, skin, milk, blood, and saliva. Applying this criterion, the sensor can identify a living victim. 
            - In contrast, deceased individuals release distinct volatile organic compounds (VOCs), such as cadaverine, putrescine, skatole, and indole. 
@@ -38,4 +47,95 @@
          - In the context of PDDL and SAR teams for debris, this technology can enhance the robot's ability to autonomously orient itself towards any source of noise. Therefore, this technology can more effectively assist in locating the victim. 
 
 
+    # Vital Signs
+    - Once a victim has been located, and assuming the robot moves towards to victim (via ROS node setup). With the capabilities of the chemical sensor the system is able to detect whether the victim is alive or deceased. This assists SAR teams in focusing recourses in different areas. 
+  
+    # Rescue
+    - Now that each of the rooms have been explored before moving onto the next room, the next step is rescue. Rescuing involves the robot sending the path followed to the SAR teams. This allows them to plan execution accordingly. 
+    - If the robot every lost signal during execution it has the abilty to first locate the victim and then return to a state where signal was found as to send co-ordinates of where the victim is to SAR teams.
+
+    # Challanges Faced:
+    - correcting the logic to first explore each room prior to moving, fixed with the scan and cleared-room predicate
+    - assesing victimes vitals , fixed with the use of the chemical sensor
+    - scenario of signal lost and having to retrace steps so that all the information gathered can be sent , attempting to fix with disabling move from starting again and first having to check whether vitals were taken before moving to a better signal if a better signal is needed
+    - Retraced steps because the addition of durative actions messed up the entire plan - 
+
 With this information further assumptions have to be made about the world, such that the problem should now be able to distinguish between a dead or alive person. And there has to be a level of hierarchy to better understand the system. For example: Enter room -> listen for noise (human dB ranges from), turn in direction of noise, thermal scan if red+ plus then good sign, test chemical levels (which increase per m closer to victim), if levels indicate alive victim great move towars it, take photos and let the system decide the type of victim and how badly trapped they are, to rescue either pin location or if lost signal retrace steps to get back signal which will call out to SAR teams on which path it took and where it found the victim
+
+
+Limitations of PDDL- we dont see the logic of when there is no sound source to turn it. In scenerios where its quite. Another limit is that the planner cant see the distance between the robot and the victim, also that we dont see the logic about remote connection and possible remote control of the robot (as this assumes autonomous), also 
+
+
+What could be a function/ durative action (PDDL):
+- The battery life of the robot will decrease will moving
+
+What could be a process/ event (PDDL+):
+
+
+
+
+(:action send-distress-signal
+    :parameters (?loc - location ?signal - signal-level)
+    :precondition (and
+        (victim-vitals)
+        (remap)
+        (robot-at ?loc)
+        (signal-connection ?loc ?signal)
+        (= ?signal strong)
+    )
+    :effect (and
+        (all-data-sent)
+    )
+)
+
+(:durative-action move-to-signal
+    :parameters (?from ?to - location )
+    :duration (= ?duration 5)
+    :condition (and
+        (at start (robot-at ?from))
+        (at start (connected ?from ?to))
+        (at start (remap))
+        (over all (>= (battery-level) 10))
+
+
+    )
+)
+
+(:action move 
+    :parameters (?from ?to - location )
+    :precondition (and 
+        (robot-at ?from)
+        (connected ?from ?to)
+        (cleared-room ?from)
+        
+    )
+    :effect(and 
+        (not (robot-at ?from))
+        (robot-at ?to)
+         
+    )
+)
+
+(:durative-action move 
+    :parameters (?from ?to - location )
+    :duration (= ?duration 5)
+    :condition (and 
+        (at start (robot-at ?from))
+        (at start (connected ?from ?to))
+        (at start (not (remap)))
+        (over all (>= (battery-level) 10))
+        (at start (cleared-room ?from))  
+        
+    )
+    :effect(and 
+        (at start (not (robot-at ?from)))
+        (at end (robot-at ?to))
+        (at end (decrease (battery-level) 10))
+         
+    )
+)
+
+
+:fluents :durative-actions
+
+    (= (battery-level) 100)

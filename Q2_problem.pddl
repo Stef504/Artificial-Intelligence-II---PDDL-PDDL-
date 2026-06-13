@@ -13,6 +13,11 @@
     (connected room3 room4)
     (connected room4 room5)
 
+    (connected room2 room1)
+    (connected room3 room2)
+    (connected room4 room3)
+    (connected room5 room4)
+
     (robot-at room1)
 
     (thermal-reading room1 blue)
@@ -27,11 +32,11 @@
     (chemical-level-alive room4 low)
     (chemical-level-alive room5 high)
 
-    (chemical-level-deceased room1 low)
-    (chemical-level-deceased room2 low)
-    (chemical-level-deceased room3 high)
-    (chemical-level-deceased room4 low)
-    (chemical-level-deceased room5 low)
+    (chemical-level-deceased room1 low1)
+    (chemical-level-deceased room2 low1)
+    (chemical-level-deceased room3 low1)
+    (chemical-level-deceased room4 low1)
+    (chemical-level-deceased room5 low1)
 
 
     (visibility room1 probability1)
@@ -40,16 +45,26 @@
     (visibility room4 probability4)
     (visibility room5 probability5)
 
-    
+    (noise-level room1 lowdB)
+    (noise-level room2 lowdB)
+    (noise-level room3 lowdB)
+    (noise-level room4 lowdB)
+    (noise-level room5 highdB)
 
-
+    (signal-connection room1 strong)
+    (signal-connection room2 poor)
+    (signal-connection room3 strong)
+    (signal-connection room4 poor)
+    (signal-connection room5 poor)
     
+    (= (battery-level) 100)
 
 )
 
 (:goal(and
-    (victim-found)
-    (oxygen-supply)
+    (victim-vitals)
+    (all-data-sent)
+    
     )
 
 ) 
