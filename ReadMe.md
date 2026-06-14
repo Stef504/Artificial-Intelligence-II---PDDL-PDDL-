@@ -59,84 +59,96 @@
     - assesing victimes vitals , fixed with the use of the chemical sensor
     - scenario of signal lost and having to retrace steps so that all the information gathered can be sent , attempting to fix with disabling move from starting again and first having to check whether vitals were taken before moving to a better signal if a better signal is needed
     - Retraced steps because the addition of durative actions messed up the entire plan - 
-    - Adding a function to monitor battery life , can not  be done. Durative actions for every action does not produce a plan and mutiple attempts have been made to fix it and it still does not work. 
+    - Adding a function to monitor battery life , can not  be done via durative action. Durative actions for every action does not produce a plan and mutiple attempts have been made to fix it and it still does not work. Durative actions do not work in the study because of how dependent the actions are and this leads to a timeline collapse. 
+    - Instead I still added battery life but as an instanuous decrease, which may not be an accurate representation as much it would of been durative action because for example during move it takes time its not  instanuous so it would of been better for the battery to drain over time of the action.
 
 With this information further assumptions have to be made about the world, such that the problem should now be able to distinguish between a dead or alive person. And there has to be a level of hierarchy to better understand the system. For example: Enter room -> listen for noise (human dB ranges from), turn in direction of noise, thermal scan if red+ plus then good sign, test chemical levels (which increase per m closer to victim), if levels indicate alive victim great move towars it, take photos and let the system decide the type of victim and how badly trapped they are, to rescue either pin location or if lost signal retrace steps to get back signal which will call out to SAR teams on which path it took and where it found the victim
 
 
-Limitations of PDDL- we dont see the logic of when there is no sound source to turn it. In scenerios where its quite. Another limit is that the planner cant see the distance between the robot and the victim, also that we dont see the logic about remote connection and possible remote control of the robot (as this assumes autonomous), also 
+## Q2- PDDL+ Model 
+
+3. Victim Health Degradtion
+4. Discovery or failure conditions
+5. Exploration delays affecting rescue success
+
+- Logic stays fairly the same to Q2 but now i have to include events where Obstacle detetction overirdes everything and shuts down the search because the robot cant move
+- Have to mointor the time taken to reach the victim which effects rescue the longer the time taken and the longer it takes to resolves problems (not something we can monitor in PDDL) the worse it is for rescue times because time is of the essence
+- Victims health can be monitored via the sniffer sensor , other non conatct technology such as radar to check vitals has difficulties with the position of the body so maybe better to monitor the CO2 level, O2 levels, VOC levels and diduce the conditions of survival of the victim
+- Success is when victim is found and data is sent
+- Failure when the battery dies , victim not found, or battery dies before victim is found, false positive (which cant be modelled- limit of pddl), vital signs decrease and not enough time for SAR to reach person (i dont think it can be modelled because of limitation of pddl)
+
+
+Worth noting:
+when the battery is at 100 the planner failures because 
+5 scans = 25
+4 moves = 40 (at victim battery is left with 35)
+Needs to find signal has to move back 2 rooms (-10) = 25 (-10)=15 below the battery life limit therefore fails and abort-mission is executed
+
+So if you want to test whether the battery is causing the failure i increased it to 150
+
+The reason for the `not(victim-vitals)` in the `process victim-health-background` is because once the robot reaches the victim it can rather get an accurate reading and then send the data and this cant be modelled in PDDL its mainly a hardware and software information. So what we check - based on conditions of the environment, the level of toxic cases in the enviornment how much the victims health will degrade over time. This should be mathemicatically calculated here is an estimate.
+As a result 
+
+(victim-vitals)
+    (or (all-data-sent) (abort-mission))
+
+Limitations with PDDL - it can not take disjunctive goals beacuse it will always try to find the quickest solution. The exmaple is that i tested what the planner will do when there is an obstacle in room2 for example... the goal given was   
+
+
+```bash
+(:goal(and
+    (or (all-data-sent) (not(all-data-sent)))
+    (or (victim-vitals) (abort-mission))
+    
+)
+
+) 
+```
+The planner struggles or fails because it got given mutiple choices and it choose the easiest one. (i.e wait for the rescue time to run out and the same values can be true). 
+
+This leads to making the goal abosulte and considering failure to produce a plan as a result of correct assumptions.
+
+Lets reframe the goal to be that the robot has to have the (all-data-sent) this is only achieved when we actually get to mesure the victims vitals (therefore it has to reach the victim)
+
+Scenerior 1:
+Battery life = 100
+victim-health = 100
+rescue = 7200
+
+- It successfully locates the victim, and reports back 
+
+Scenario 2:
+Battery Life = 80
+victim-health = 100
+rescue = 7200
+
+- Plan fails to execute because the battery runs out before all-data-sent can be achieved
+
+Scenario 3:
+- An obsatcle is placed in the second room 
+- Plan fails beacause it can not reach the victim to check its vital which activates the all-data-sent
+
+
+Scenario 4:
+- 
+
+
+# Challenges Faced
+- When checking whether the victims health degrades over time using process it was noted that the time stays constant in the plan. 
+- This is present because no durative actions were used. Durative actions weren't used because it caused a time collapse conflict. This conflict arised beacuse of how strict and dependent the actions are. 
+- However, this is the time only for the action to take place while the real physics still degrades the rescue time and the victims health in the background so when the victims health starts at 40 it wont produce a plan because it abort the mission 
+
+
+Limitations of PDDL- we dont see the logic of when there is no sound source to turn it. In scenerios where its quite. Another limit is that the planner cant see the distance between the robot and the victim, also that we dont see the logic about remote connection and possible remote control of the robot (as this assumes autonomous).
+Another Limit is that it can not observe obstacles , also difficult to model false positives 
+
+
 
 
 What could be a function/ durative action (PDDL):
 - The battery life of the robot will decrease will moving
 
 What could be a process/ event (PDDL+):
+- Porcesses and Events
+- 
 
-
-
-
-(:action send-distress-signal
-    :parameters (?loc - location ?signal - signal-level)
-    :precondition (and
-        (victim-vitals)
-        (remap)
-        (robot-at ?loc)
-        (signal-connection ?loc ?signal)
-        (= ?signal strong)
-    )
-    :effect (and
-        (all-data-sent)
-    )
-)
-
-(:durative-action move-to-signal
-    :parameters (?from ?to - location )
-    :duration (= ?duration 5)
-    :condition (and
-        (at start (robot-at ?from))
-        (at start (connected ?from ?to))
-        (at start (remap))
-        (over all (>= (battery-level) 10))
-
-
-    )
-)
-
-(:action move 
-    :parameters (?from ?to - location )
-    :precondition (and 
-        (robot-at ?from)
-        (connected ?from ?to)
-        (cleared-room ?from)
-        
-    )
-    :effect(and 
-        (not (robot-at ?from))
-        (robot-at ?to)
-         
-    )
-)
-
-(:durative-action move 
-    :parameters (?from ?to - location )
-    :duration (= ?duration 5)
-    :condition (and 
-        (at start (robot-at ?from))
-        (at start (connected ?from ?to))
-        (at start (not (remap)))
-        (over all (>= (battery-level) 10))
-        (at start (cleared-room ?from))  
-        
-    )
-    :effect(and 
-        (at start (not (robot-at ?from)))
-        (at end (robot-at ?to))
-        (at end (decrease (battery-level) 10))
-         
-    )
-)
-
-
-:fluents :durative-actions
-
-    (= (battery-level) 100)

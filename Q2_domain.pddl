@@ -1,6 +1,6 @@
 (define (domain explore-building)
 
-(:requirements :strips :typing :equality :negative-preconditions :disjunctive-preconditions :fluents :durative-actions)
+(:requirements :strips :typing :equality :negative-preconditions :disjunctive-preconditions :fluents)
 
 (:types 
     location
@@ -37,126 +37,116 @@
     (battery-level)
 )
 
-(:durative-action scan-victim 
+(:action scan-victim 
     :parameters (?loc - location  ?reading - thermal-signature ?vis - visibility-level ?level - dB-level )
-    :duration (= ?duration 3)
-    :condition (and
-        
-        (at start (thermal-reading ?loc ?reading))
-        (at start (visibility ?loc ?vis))
-        (at start (noise-level ?loc ?level))
-
-        (over all (>= (battery-level) 10))
-        (over all (robot-at ?loc))
+    :precondition (and
+        (robot-at ?loc)
+        (thermal-reading ?loc ?reading)
+        (visibility ?loc ?vis)
+        (noise-level ?loc ?level)
+        (>=(battery-level)10)
     )
 
-    :effect (and 
-        (at end (cleared-room ?loc))
-        (at end (decrease (battery-level) 4))
+    :effect (and
+        (cleared-room ?loc)
+        (decrease (battery-level)5)
     )
     
 )
 
-(:durative-action locate-victim
-    :parameters (?loc - location  )
-    :duration (= ?duration 1)
-    :condition (and
-        (over all (cleared-room ?loc))
-        (over all (robot-at ?loc))
-        
-        (at start (thermal-reading ?loc red))
-        (at start (visibility ?loc probability5))
-        (at start (noise-level ?loc highdB))
+(:action locate-victim
+    :parameters (?loc - location  ?reading - thermal-signature ?vis - visibility-level ?level - dB-level)
+    :precondition (and
+        (cleared-room ?loc)
+        (robot-at ?loc)
+        (thermal-reading ?loc ?reading)
+        (visibility ?loc ?vis)
+        (noise-level ?loc ?level)
 
+        (= ?reading red)
+        (= ?vis probability5)
+        (= ?level highdB)
     )
     :effect (and 
-        (at end (victim-found ?loc))
-        (at end (remap))
+        (victim-found ?loc)
+        (remap)
     )
 )
 
-(:durative-action victim-health-check-alive
-    :parameters (?loc - location  )
-    :duration (= ?duration 1)
-    :condition (and 
-        (over all (robot-at ?loc))
-        (over all (victim-found ?loc))
+(:action victim-health-check-alive
+    :parameters (?loc - location ?co2 - CO2-level )
+    :precondition (and 
+        (robot-at ?loc)
+        (victim-found ?loc)
 
-        (at start (chemical-level-alive ?loc high))
-    )
+        (chemical-level-alive ?loc ?co2)
+
+        (= ?co2 high))
     :effect(and
-        (at end (victim-alive ?loc))
-        (at end (victim-vitals))
+        (victim-alive ?loc)
+        (victim-vitals)
     )
 )
 
-(:durative-action victim-health-check-deceased
-    :parameters (?loc - location )
-    :duration (= ?duration 1)
-    :condition (and 
-        (over all (robot-at ?loc))
-        (over all (victim-found ?loc))
+(:action victim-health-check-deceased
+    :parameters (?loc - location ?ammonia - ammonia-level)
+    :precondition (and 
+        (robot-at ?loc)
+        (victim-found ?loc)
 
-        (at start (chemical-level-deceased ?loc high1))
-    )
+        (chemical-level-deceased ?loc ?ammonia)
 
+        (= ?ammonia high1))
     :effect(and 
-        (at end (victim-deceased ?loc))
-        (at end (victim-vitals))
+        (victim-deceased ?loc)
+        (victim-vitals)
     )
 )
 
-(:durative-action move 
+(:action move 
     :parameters (?from ?to - location )
-    :duration (= ?duration 5)
-    :condition (and 
-        (at start (robot-at ?from))
-        (at start (connected ?from ?to))
-        (at start (not (remap)))
-        (at start (cleared-room ?from))  
-        
-        (over all (>= (battery-level) 10))
+    :precondition (and 
+        (robot-at ?from)
+        (connected ?from ?to)
+        (cleared-room ?from)
+        (>= (battery-level)10)
         
     )
     :effect(and 
-        (at start (not (robot-at ?from)))
-        (at end (robot-at ?to))
-        (at end (decrease (battery-level) 10))
+        (not (robot-at ?from))
+        (robot-at ?to)
+        (decrease (battery-level) 10)
          
     )
 )
 
-(:durative-action send-distress-signal
-    :parameters (?loc - location )
-    :duration (= ?duration 1)
-    :condition (and
-        (over all (victim-vitals))
-        (over all (remap))
-        (over all (robot-at ?loc))
-
-        (at start (signal-connection ?loc strong))
-
+(:action send-distress-signal
+    :parameters (?loc - location ?signal - signal-level)
+    :precondition (and
+        (victim-vitals)
+        (remap)
+        (robot-at ?loc)
+        (signal-connection ?loc ?signal)
+        (= ?signal strong)
     )
     :effect (and
-       (at end (all-data-sent))
+        (all-data-sent)
     )
 )
 
-(:durative-action move-to-signal
+(:action move-to-signal
     :parameters (?from ?to - location )
-    :duration (= ?duration 5)
-    :condition (and
-        (at start (robot-at ?from))
-        (at start (connected ?from ?to))
-        (at start (remap))
-
-        (over all (>= (battery-level) 10))
+    :precondition (and
+       (robot-at ?from)
+       (connected ?from ?to)
+       (remap)
+       (>=(battery-level)10)
 
     )
     :effect(and 
-        (at start (not (robot-at ?from)))
-        (at end (robot-at ?to))
-        (at end (decrease (battery-level) 10))
+        (not (robot-at ?from))
+        (robot-at ?to)
+        (decrease (battery-level)10)
         
     )
 

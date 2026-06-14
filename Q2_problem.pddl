@@ -57,7 +57,7 @@
     (signal-connection room4 poor)
     (signal-connection room5 poor)
     
-    (= (battery-level) 500)
+    (= (battery-level) 100)
 
 )
 
