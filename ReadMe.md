@@ -142,6 +142,8 @@ Scenario 5:
 - However, this is the time only for the action to take place while the real physics still degrades the rescue time and the victims health in the background so when the victims health starts at 40 it wont produce a plan because it abort the mission 
 - The problem is that when i added the send-abort action, it gave a different output compared to the stacked output i was getting without. I used send-abort because i wanted the goal to either acheive all-data-sent with and without the victim vitals in cases where the battery died or the victims health was reached or the rescue time ran out  before the vital were taken. But because durative actions were not working I had no time indicates and so the planner chose the quickest path to complete the task so thats why i had graphs and depletions because it still acheived the saem results without proper execution.
 - So we have to establish mutually exclusive technique 
+- Durative actions are not supported via ENHSP therefore converting it where the actions start and end a process. Needed to ground processes gates and PDDL kinda stores values thats how it knows the ?to
+- Processes having preconditions mess up the planner
 
 
 Limitations of PDDL- we dont see the logic of when there is no sound source to turn it. In scenerios where its quite. Another limit is that the planner cant see the distance between the robot and the victim, also that we dont see the logic about remote connection and possible remote control of the robot (as this assumes autonomous).

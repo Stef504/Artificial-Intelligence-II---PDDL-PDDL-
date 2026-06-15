@@ -26,19 +26,15 @@
 (:predicates 
     (robot-at ?loc - location)
     (victim-found ?loc - location) 
-    (victim-alive )
-    (victim-deceased )
+    (victim-alive ?loc - location)
+    (victim-deceased ?loc - location)
     (remap)
     (victim-vitals)
     (all-data-sent)
     (abort-mission)
+    (failure)
     (phase-scan)
     (phase-move)
-    (moving)
-    (scanning)
-    (search-signal)
-    (failure) 
-    (victim-located)
     (connected ?loc1 ?loc2 - location)
     (thermal-reading ?loc - location ?reading - thermal-signature)
     (chemical-level-alive ?loc - location ?co2 - CO2-level)
@@ -48,70 +44,41 @@
     (noise-level ?loc - location ?level - dB-level)
     (signal-connection ?loc - location ?signal - signal-level)
     (obstacle-detection ?loc - location ?obs - obstacle)
-    (scanning-at ?loc - location)
-    (moving-to ?loc - location)
 )
 
 (:functions
     (battery-level)
     (victim-health)
     (rescue)
-    (robot-scan)
-    (robot-move)
 
 )
 
 
-;SCANNING
 
-(:action start-scan 
+
+(:durative-action scan-victim 
     :parameters (?loc - location  ?reading - thermal-signature ?vis - visibility-level ?level - dB-level )
-    :precondition (and
-        (phase-scan)
-        (thermal-reading ?loc ?reading)
-        (visibility ?loc ?vis)
-        (noise-level ?loc ?level)
-        (robot-at ?loc)
+    :duration (= ?duration 10)
+    :condition (and
+        (at start (phase-scan))
+        (at start (thermal-reading ?loc ?reading))
+        (at start (visibility ?loc ?vis))
+        (at start (noise-level ?loc ?level))
 
-        (not (abort-mission))
-        (not (phase-move))
-        (not (scanning))
-
-        (>= (battery-level) 10)
+        (over all (robot-at ?loc))
+        (over all (not (abort-mission)))
+        (over all (>=(battery-level)10))
     )
 
     :effect (and
-        (scanning)
-        (scanning-at ?loc)
-        (assign (robot-scan) 10)
+        (at start (not (phase-scan)))
+        
+        (at end (cleared-room ?loc))
+        (at end (decrease (battery-level)5))
+        (at end (phase-move))
     )
     
 )
-
-(:process scanning-in-progress
-    :parameters ()
-    :precondition (scanning)
-    :effect (decrease (robot-scan)(* #t 1))
-)
-
-(:action end-scan
-    :parameters (?loc - location)
-    :precondition (and 
-        (scanning)
-        (scanning-at ?loc)
-        (<= (robot-scan) 0)
-    )
-    :effect (and 
-        (not (phase-scan))
-        (not(scanning))
-
-        (cleared-room ?loc)
-        (phase-move)
-
-        (decrease (battery-level)5)
-    )
-)
-
 
 (:action locate-victim
     :parameters (?loc - location )
@@ -125,7 +92,6 @@
     )
     :effect (and 
         (victim-found ?loc)
-        (victim-located)
         (remap)
     )
 )
@@ -137,13 +103,11 @@
         (victim-found ?loc)
 
         (chemical-level-alive ?loc high)
-        (not (abort-mission))
 
     )
     :effect(and
-        (victim-alive )
+        (victim-alive ?loc)
         (victim-vitals)
-  
     )
 )
 
@@ -154,10 +118,9 @@
         (victim-found ?loc)
 
         (chemical-level-deceased ?loc high1)
-        (not (abort-mission))
     )
     :effect(and 
-        (victim-deceased )
+        (victim-deceased ?loc)
         (victim-vitals)
         
     )
@@ -165,11 +128,7 @@
 
 (:process victim-health-background
     :parameters ()
-    :precondition (and 
-        (not (all-data-sent))
-        (victim-alive)
-        (victim-located)
-    )
+    :precondition (not (victim-vitals))
     :effect (decrease (victim-health) (* #t 10))   
 )
 
@@ -204,7 +163,7 @@
     :parameters ()
     :precondition (and
         (not(abort-mission))
-        (< (battery-level) 10)
+        (< (battery-level) 15)
     )
     :effect (abort-mission)
 )
@@ -225,107 +184,36 @@
 
 
 
-(:action start-move 
+(:durative-action move 
     :parameters (?from ?to - location )
-    :precondition (and 
-        (phase-move)
-        (connected ?from ?to)
-        (robot-at ?from)
-        (cleared-room ?from)
+    :duration (= ?duration 10)
+    :condition (and 
+        (at start (phase-move))
+        (at start (not (phase-scan)))
+        (at start (robot-at ?from))
+        (at start (cleared-room ?from))
 
-        (>= (battery-level) 20)
-
-        (not (abort-mission))
-        (not (phase-scan))
-        (not (moving))
-        (not (search-signal))
+        (over all (>= (battery-level)20))
+        (over all (not (abort-mission)))
+        (over all (connected ?from ?to))
     )
     :effect(and 
-        (not (robot-at ?from))
-
-        (moving)
-        (moving-to ?to)
-        (assign (robot-move) 10)
+        (at start (not (robot-at ?from)))
+        (at start (not (phase-move)))
+        
+        (at end (robot-at ?to))
+        (at end (decrease (battery-level) 10))
+        (at end (phase-scan))
+        
+         
     )
 )
-
-(:process move-in-progress
-    :parameters()
-    :precondition (moving)
-    :effect (and 
-        (decrease (robot-move) (* #t 1))
-    )
-)
-
-(:action end-move
-    :parameters (?to - location)
-    :precondition (and 
-        (moving)
-        (moving-to ?to)
-        (<= (robot-move) 0)
-    )
-    :effect (and 
-        (not (moving))
-        (not (phase-move))
-        (not (moving-to ?to))
-        (robot-at ?to)
-        (decrease (battery-level) 10)
-        (phase-scan)
-    )
-)
-
-
-(:action start-move-to-signal
-    :parameters (?from ?to - location )
-    :precondition (and
-        (robot-at ?from)
-        (connected ?from ?to)
-        (or (remap) (abort-mission))
-        (not (moving))
-        (not (search-signal))
-        (>=(battery-level) 20)
-
-    )
-    :effect(and 
-        (not (robot-at ?from))
-
-        (search-signal)
-        (moving-to ?to)
-        (assign (robot-move) 10)
-    )
-)
-
-(:process moving-signal
-    :parameters ()
-    :precondition (search-signal)
-    :effect (and 
-        (decrease (robot-move) (* #t 1))
-    )
-)
-
-(:action found-signal
-    :parameters (?to - location)
-    :precondition (and 
-        (search-signal)
-        (moving-to ?to)
-        (<= (robot-move) 0)
-    )
-    :effect (and 
-        (not(search-signal))
-        (not (moving-to ?to))
-        (robot-at ?to)
-        (decrease (battery-level) 10)
-    )
-)
-
-;SEND DATA
 
 (:action send-distress-signal
     :parameters (?loc - location )
     :precondition (and
         (victim-vitals)
         (or (remap) (abort-mission))
-        (not (all-data-sent))
         (robot-at ?loc)
         (signal-connection ?loc strong)
     )
@@ -339,7 +227,6 @@
     :precondition (and 
         (abort-mission)
         (robot-at ?loc)
-        (not (failure))
         (signal-connection ?loc strong)
         
     )
@@ -347,6 +234,24 @@
         (failure)
     )
 )
+
+(:durative-action move-to-signal
+    :parameters (?from ?to - location )
+    :duration (= ?duration 10)
+    :condition (and
+        (at start (robot-at ?from))
+        (over all (connected ?from ?to))
+        (at start (or (remap) (abort-mission)))
+        (over all (>=(battery-level)20))
+
+    )
+    :effect(and 
+        (at start (not (robot-at ?from)))
+        (at end (robot-at ?to))
+        (at end (decrease (battery-level)10))
+    )
+)
+
 
 
 

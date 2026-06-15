@@ -18,7 +18,7 @@
     (connected room4 room3)
     (connected room5 room4)
 
-    (robot-at room4)
+    (robot-at room1)
 
     (thermal-reading room1 blue)
     (thermal-reading room2 orange)
@@ -67,14 +67,16 @@
 
     
     (= (battery-level) 500)
-    (= (victim-health) 200)
+    (= (victim-health) 500)
     (= (rescue) 3600)
+    (= (robot-move) 10)
+    (= (robot-scan) 10)
 
 
 )
 
-(:goal(and
-    (and (all-data-sent) (victim-vitals)))
+(:goal
+    (all-data-sent)
 )
 
 ) 
