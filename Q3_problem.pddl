@@ -18,7 +18,7 @@
     (connected room4 room3)
     (connected room5 room4)
 
-    (robot-at room1)
+    (robot-at room4)
 
     (thermal-reading room1 blue)
     (thermal-reading room2 orange)
@@ -62,18 +62,20 @@
     (obstacle-detection room3 no)
     (obstacle-detection room4 no)
     (obstacle-detection room5 no)
+
+    (phase-scan)
+
     
-    (= (battery-level) 100)
-    (= (victim-health) 100)
+    (= (battery-level) 500)
+    (= (victim-health) 200)
     (= (rescue) 3600)
+
 
 )
 
-(:goal(or
-    (and (all-data-sent) (victim-vitals))
-    (and (failure) (abort-mission))
+(:goal(and
+    (and (all-data-sent) (victim-vitals)))
 )
 
 ) 
 
-)

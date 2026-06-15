@@ -130,6 +130,9 @@ Scenario 3:
 
 
 Scenario 4:
+- Changing victims health 
+
+Scenario 5:
 - 
 
 
@@ -137,6 +140,8 @@ Scenario 4:
 - When checking whether the victims health degrades over time using process it was noted that the time stays constant in the plan. 
 - This is present because no durative actions were used. Durative actions weren't used because it caused a time collapse conflict. This conflict arised beacuse of how strict and dependent the actions are. 
 - However, this is the time only for the action to take place while the real physics still degrades the rescue time and the victims health in the background so when the victims health starts at 40 it wont produce a plan because it abort the mission 
+- The problem is that when i added the send-abort action, it gave a different output compared to the stacked output i was getting without. I used send-abort because i wanted the goal to either acheive all-data-sent with and without the victim vitals in cases where the battery died or the victims health was reached or the rescue time ran out  before the vital were taken. But because durative actions were not working I had no time indicates and so the planner chose the quickest path to complete the task so thats why i had graphs and depletions because it still acheived the saem results without proper execution.
+- So we have to establish mutually exclusive technique 
 
 
 Limitations of PDDL- we dont see the logic of when there is no sound source to turn it. In scenerios where its quite. Another limit is that the planner cant see the distance between the robot and the victim, also that we dont see the logic about remote connection and possible remote control of the robot (as this assumes autonomous).
