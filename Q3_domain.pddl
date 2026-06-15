@@ -58,6 +58,7 @@
     (rescue)
     (robot-scan)
     (robot-move)
+    (robot-signal)
 
 )
 
@@ -104,6 +105,7 @@
     :effect (and 
         (not (phase-scan))
         (not(scanning))
+        (not (scanning-at ?loc))
 
         (cleared-room ?loc)
         (phase-move)
@@ -121,6 +123,8 @@
         (thermal-reading ?loc red)
         (visibility ?loc probability5)
         (noise-level ?loc highdB)
+
+        (not (abort-mission))
 
     )
     :effect (and 
@@ -268,6 +272,7 @@
         (not (moving))
         (not (phase-move))
         (not (moving-to ?to))
+
         (robot-at ?to)
         (decrease (battery-level) 10)
         (phase-scan)
@@ -283,7 +288,7 @@
         (or (remap) (abort-mission))
         (not (moving))
         (not (search-signal))
-        (>=(battery-level) 20)
+        (>= (battery-level) 20)
 
     )
     :effect(and 
@@ -291,7 +296,7 @@
 
         (search-signal)
         (moving-to ?to)
-        (assign (robot-move) 10)
+        (assign (robot-signal) 10)
     )
 )
 
@@ -299,7 +304,7 @@
     :parameters ()
     :precondition (search-signal)
     :effect (and 
-        (decrease (robot-move) (* #t 1))
+        (decrease (robot-signal) (* #t 1))
     )
 )
 
@@ -308,11 +313,12 @@
     :precondition (and 
         (search-signal)
         (moving-to ?to)
-        (<= (robot-move) 0)
+        (<= (robot-signal) 0)
     )
     :effect (and 
         (not(search-signal))
         (not (moving-to ?to))
+
         (robot-at ?to)
         (decrease (battery-level) 10)
     )
@@ -345,6 +351,7 @@
     )
     :effect (and
         (failure)
+        (all-data-sent)
     )
 )
 

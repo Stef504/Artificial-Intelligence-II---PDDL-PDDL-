@@ -71,6 +71,7 @@
     (= (rescue) 3600)
     (= (robot-move) 10)
     (= (robot-scan) 10)
+    (= (robot-signal) 10)
 
 
 )
