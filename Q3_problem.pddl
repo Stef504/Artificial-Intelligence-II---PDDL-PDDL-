@@ -66,8 +66,8 @@
     (phase-scan)
 
     
-    (= (battery-level) 500)
-    (= (victim-health) 500)
+    (= (battery-level) 200)
+    (= (victim-health) 100)
     (= (rescue) 3600)
     (= (robot-move) 10)
     (= (robot-scan) 10)

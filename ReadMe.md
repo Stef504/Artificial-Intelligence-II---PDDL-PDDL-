@@ -127,13 +127,14 @@ rescue = 7200
 Scenario 3:
 - An obsatcle is placed in the second room 
 - Plan fails beacause it can not reach the victim to check its vital which activates the all-data-sent
+- We expect failure
 
 
 Scenario 4:
 - Changing victims health 
 
 Scenario 5:
-- 
+- Deceased victims their health is st
 
 
 # Challenges Faced
@@ -144,7 +145,9 @@ Scenario 5:
 - So we have to establish mutually exclusive technique 
 - Durative actions are not supported via ENHSP therefore converting it where the actions start and end a process. Needed to ground processes gates and PDDL kinda stores values thats how it knows the ?to
 - Processes having preconditions mess up the planner
-
+- Having to use tokens (actions with certian predicates) to start and stop processes. 
+- Very particular about which tokens are true/false. In order to execute an action or event once you have to make sure that the effect predicate is false before making it true. So for the events this was a crutial point
+- g(n) = 60 seconds
 
 Limitations of PDDL- we dont see the logic of when there is no sound source to turn it. In scenerios where its quite. Another limit is that the planner cant see the distance between the robot and the victim, also that we dont see the logic about remote connection and possible remote control of the robot (as this assumes autonomous).
 Another Limit is that it can not observe obstacles , also difficult to model false positives 
