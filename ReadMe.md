@@ -148,17 +148,14 @@ Scenario 5:
 - Having to use tokens (actions with certian predicates) to start and stop processes. 
 - Very particular about which tokens are true/false. In order to execute an action or event once you have to make sure that the effect predicate is false before making it true. So for the events this was a crutial point
 - g(n) = 60 seconds
+- the choice to remove the (not(abort-mission)) from actions was because the planner would freeze and try to find a plan. This caused an infinite loop of searching for a plan. 
+- keeping it in send-distress-signal means that the plan will fail when the victims health deplets after it has been found but if we remove it then we can note when the victims health deplets and still send a signal (which is what we want)
 
 Limitations of PDDL- we dont see the logic of when there is no sound source to turn it. In scenerios where its quite. Another limit is that the planner cant see the distance between the robot and the victim, also that we dont see the logic about remote connection and possible remote control of the robot (as this assumes autonomous).
-Another Limit is that it can not observe obstacles , also difficult to model false positives 
+Another Limit is that it can not observe obstacles , also difficult to model false positives. It is still very abstract and only considers flag states like it has moved, not moved ect. and in cases of events. Also it is very particular (which isnt a limit just annoying). The planner couldnt handle durative actions when processes and events were introduced which leads to work around solutions. while some of the limits could be modelled it brings in complexity into the planner, which it does not handle very well unless the domain is very explicit and there are no ininfite loops. 
 
 
-
-
-What could be a function/ durative action (PDDL):
-- The battery life of the robot will decrease will moving
-
-What could be a process/ event (PDDL+):
-- Porcesses and Events
-- 
-
+file:///C:/Users/stefa/AppData/Local/Temp/plan-report--17152-f8loGlM5g1PE-.html
+file:///C:/Users/stefa/AppData/Local/Temp/plan-report--17152-A5N0D6WaWNIp-.html
+file:///C:/Users/stefa/AppData/Local/Temp/plan-report--17152-V0C6Dcg4A06S-.html
+file:///C:/Users/stefa/AppData/Local/Temp/plan-report--17152-TGmmjW3eot92-.html

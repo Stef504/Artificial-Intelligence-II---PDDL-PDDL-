@@ -1,0 +1,11 @@
+;;!domain: locate-victim
+;;!problem: locate-victim-1
+
+0.00000: (MOVE ROOM1 ROOM2)
+0.00100: (MOVE ROOM2 ROOM3)
+0.00200: (MOVE ROOM3 ROOM4)
+0.00300: (SCAN-VICTIM ROOM4)
+0.00400: (RESCUE ROOM4)
+
+; Makespan: 0.004
+; Metric: 0.004

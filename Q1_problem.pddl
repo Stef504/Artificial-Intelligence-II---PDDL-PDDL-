@@ -12,6 +12,10 @@
     (connected room3 room4)
     (connected room4 room5)
 
+    (thermal-reading room4 red)
+    (visibility room4 probability5)
+    (noise-level room4 highdB)
+
     (robot-at room1)
     (victim-at room4)
 )

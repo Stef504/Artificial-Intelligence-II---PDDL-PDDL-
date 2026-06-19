@@ -36,11 +36,8 @@
     (phase-move)
     (moving)
     (scanning)
-    (search-signal)
-    (failure) 
+    (search-signal) 
     (victim-located)
-    (stop-prior)
-    (send)
     (connected ?loc1 ?loc2 - location)
     (thermal-reading ?loc - location ?reading - thermal-signature)
     (chemical-level-alive ?loc - location ?co2 - CO2-level)
@@ -76,7 +73,6 @@
         (noise-level ?loc ?level)
         (robot-at ?loc)
 
-        (not (abort-mission))
         (not (phase-move))
         (not (scanning))
 
@@ -220,7 +216,7 @@
     :parameters ()
     :precondition (and 
         (not(abort-mission))
-        (< (victim-health) 0)
+        (<= (victim-health) 0)
     )
     :effect (abort-mission)
 )
@@ -229,7 +225,7 @@
     :parameters ()
     :precondition (and 
         (not(abort-mission))
-        (< (rescue) 0)
+        (<= (rescue) 0)
     )
     :effect (abort-mission)
 )
@@ -239,7 +235,7 @@
     :parameters ()
     :precondition (and
         (not(abort-mission))
-        (< (battery-level) 20)
+        (<= (battery-level) 20)
     )
     :effect (abort-mission)
 )
@@ -270,7 +266,6 @@
 
         (>= (battery-level) 20)
 
-        (not (abort-mission))
         (not (phase-scan))
         (not (moving))
         (not (search-signal))
@@ -321,7 +316,6 @@
         (connected ?from ?to)
         (not (moving))
         (not (search-signal))
-        (not (abort-mission))
         (victim-located)
         (>= (battery-level) 20)
 
@@ -339,7 +333,6 @@
     :parameters ()
     :precondition (and 
         (search-signal)
-        (not(abort-mission))
         (> (robot-signal) 0)
     )
     :effect (and 
@@ -352,7 +345,6 @@
     :precondition (and 
         (search-signal)
         (moving-to ?to)
-        (not (abort-mission))
 
         (<= (robot-signal) 0)
     )
@@ -372,7 +364,7 @@
     :precondition (and
         (victim-vitals)
         (not (all-data-sent))
-        (not (abort-mission))
+        ;(not (abort-mission))
         (robot-at ?loc)
         (signal-connection ?loc strong)
     )
