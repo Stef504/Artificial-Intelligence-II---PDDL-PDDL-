@@ -22,15 +22,15 @@
 
     (thermal-reading room1 blue)
     (thermal-reading room2 orange)
-    (thermal-reading room3 red)
+    (thermal-reading room3 yellow)
     (thermal-reading room4 green)
-    (thermal-reading room5 yellow)
+    (thermal-reading room5 red)
 
     (chemical-level-alive room1 low)    
     (chemical-level-alive room2 low)
-    (chemical-level-alive room3 high)
+    (chemical-level-alive room3 low)
     (chemical-level-alive room4 low)
-    (chemical-level-alive room5 low)
+    (chemical-level-alive room5 high)
 
     (chemical-level-deceased room1 low1)
     (chemical-level-deceased room2 low1)
@@ -41,15 +41,15 @@
 
     (visibility room1 probability1)
     (visibility room2 probability3)
-    (visibility room3 probability5)
+    (visibility room3 probability3)
     (visibility room4 probability4)
-    (visibility room5 probability3)
+    (visibility room5 probability5)
 
     (noise-level room1 lowdB)
     (noise-level room2 lowdB)
-    (noise-level room3 highdB)
+    (noise-level room3 lowdB)
     (noise-level room4 lowdB)
-    (noise-level room5 lowdB)
+    (noise-level room5 highdB)
 
     (signal-connection room1 strong)
     (signal-connection room2 poor)
@@ -67,11 +67,10 @@
 
     
     (= (battery-level) 100)
-    (= (victim-health) 150)
+    (= (victim-health) 120)
     (= (rescue) 3600)
     (= (robot-move) 10)
-    (= (robot-scan) 10)
-    (= (robot-signal) 10)
+    (= (robot-scan) 5)
 
 
 )

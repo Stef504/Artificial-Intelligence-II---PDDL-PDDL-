@@ -21,9 +21,8 @@
 )
 
 (:goal (and
-    (robot-at room4)
     (victim-found)
-    (oxygen-supply)
+    (oxygen)
 ))
 
 )

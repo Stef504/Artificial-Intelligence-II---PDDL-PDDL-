@@ -1,6 +1,6 @@
 (define (domain explore-building)
 
-(:requirements :strips :typing :equality :negative-preconditions :disjunctive-preconditions)
+(:requirements :strips :typing :equality :negative-preconditions :disjunctive-preconditions :fluents)
 
 (:types 
     location
@@ -44,10 +44,13 @@
         (thermal-reading ?loc ?reading)
         (visibility ?loc ?vis)
         (noise-level ?loc ?level)
+        (>=(battery-level)10)
     )
 
-    :effect 
+    :effect (and
         (cleared-room ?loc)
+        (decrease (battery-level)5)
+    )
     
 )
 
@@ -106,11 +109,13 @@
         (robot-at ?from)
         (connected ?from ?to)
         (cleared-room ?from)
+        (>= (battery-level)10)
         
     )
     :effect(and 
         (not (robot-at ?from))
         (robot-at ?to)
+        (decrease (battery-level) 10)
          
     )
 )
@@ -135,11 +140,13 @@
        (robot-at ?from)
        (connected ?from ?to)
        (remap)
+       (>=(battery-level)10)
 
     )
     :effect(and 
         (not (robot-at ?from))
         (robot-at ?to)
+        (decrease (battery-level)10)
         
     )
 
@@ -219,5 +226,32 @@
     )
 
 ) 
+
+)
+
+
+durative:
+
+(:durative-action move-to-signal
+    :parameters (?from ?to - location )
+    :duration (= ?duration 5)
+    :condition (and
+        (at start (robot-idle))
+        (at start (robot-at ?from))
+        (at start (remap))
+
+       (over all (>= (battery-level) 20))
+       (over all (connected ?from ?to))
+
+    )
+    :effect(and 
+        (at start (not(robot-idle)))
+        (at start (not (robot-at ?from)))
+            
+        (at end  (robot-idle))
+        (at end  (robot-at ?to))
+        (at end  (decrease (battery-level) 10))     
+        
+    )
 
 )

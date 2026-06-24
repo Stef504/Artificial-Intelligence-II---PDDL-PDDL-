@@ -10,25 +10,27 @@
     red orange yellow green blue - thermal-signature
     probability1 probability2 probability3 probability4 probability5 - visibility-level
     lowdB highdB - dB-level
+
 )
 
 (:predicates
     (robot-at ?loc - location)
     (victim-at ?loc - location)
     (victim-found)
-    (oxygen-supply)
+    (oxygen)
     (scan)
     (connected ?loc1 ?loc2 - location)
     (visibility ?loc - location ?vis - visibility-level)
     (noise-level ?loc - location ?level - dB-level)
     (thermal-reading ?loc - location ?reading - thermal-signature)
-)
+) 
 
 (:action move 
     :parameters (?from ?to - location)
     :precondition (and 
         (robot-at ?from)
         (connected ?from ?to)
+        (not(victim-found))
     )
     :effect(and 
         (not(robot-at ?from))
@@ -48,20 +50,20 @@
         (scan)
     )
     :effect (and 
+        (victim-at ?loc)
         (victim-found)
     )
 )
 
 (:action rescue
-    :parameters (?loc - location)
+    :parameters (?loc - location )
     :precondition (and 
-        (robot-at ?loc)
-        (victim-at ?loc)
         (victim-found)
+        (victim-at ?loc)
+        
     )
-    :effect(and 
-        (oxygen-supply)
-    )
-
+    :effect (oxygen) 
 )
+
+
 )

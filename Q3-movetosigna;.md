@@ -36,6 +36,7 @@
     (phase-move)
     (moving)
     (scanning)
+    (search-signal) 
     (victim-located)
     (connected ?loc1 ?loc2 - location)
     (thermal-reading ?loc - location ?reading - thermal-signature)
@@ -56,6 +57,7 @@
     (rescue)
     (robot-scan)
     (robot-move)
+    (robot-signal)
 
 )
 
@@ -73,7 +75,6 @@
 
         (not (phase-move))
         (not (scanning))
-        (not (abort-mission))
 
         (>= (battery-level) 20)
     )
@@ -92,7 +93,6 @@
     :precondition (and 
         (scanning)
         (> (robot-scan) 0)
-        (not (abort-mission))
         
     )
     :effect (decrease (robot-scan)(* #t 1))
@@ -177,7 +177,7 @@
     :parameters ()
     :precondition (and 
         (not (all-data-sent))
-        (not (victim-vitals))
+        (not (victim-located))
         (not (abort-mission))
 
     )
@@ -192,7 +192,7 @@
     :precondition (and 
         (not (all-data-sent))
         (victim-alive)
-        (victim-vitals)
+        (victim-located)
         (not (abort-mission))
     )
     :effect (and 
@@ -269,8 +269,8 @@
 
         (not (phase-scan))
         (not (moving))
-        (not (abort-mission))
-
+        ;(not (search-signal))
+        ;(not (remap))
     )
     :effect(and 
         (not (robot-at ?from))
@@ -286,7 +286,6 @@
     :precondition (and 
         (moving)
         (> (robot-move) 0)
-        (not (abort-mission))
     )
     :effect (and 
         (decrease (robot-move) (* #t 1))
@@ -310,18 +309,54 @@
     )
 )
 
-(:action bypass-scan
-    :parameters ()
-    :precondition (and 
-        (phase-scan)
-        (remap)       
-        (not (abort-mission))
-    )
-    :effect (and 
-        (not (phase-scan))
-        (phase-move) 
-    )
-)
+
+; (:action start-move-to-signal
+;     :parameters (?from ?to - location )
+;     :precondition (and
+;         (robot-at ?from)
+;         (connected ?from ?to)
+;         (not (moving))
+;         (not (search-signal))
+;         (victim-located)
+;         (>= (battery-level) 20)
+
+;     )
+;     :effect(and 
+;         (not (robot-at ?from))
+
+;         (search-signal)
+;         (moving-to ?to)
+;         (assign (robot-signal) 10)
+;     )
+; )
+
+; (:process moving-signal
+;     :parameters ()
+;     :precondition (and 
+;         (search-signal)
+;         (> (robot-signal) 0)
+;     )
+;     :effect (and 
+;         (decrease (robot-signal) (* #t 1))
+;     )
+; )
+
+; (:action end-move-signal
+;     :parameters (?to - location)
+;     :precondition (and 
+;         (search-signal)
+;         (moving-to ?to)
+
+;         (<= (robot-signal) 0)
+;     )
+;     :effect (and 
+;         (not(search-signal))
+;         (not (moving-to ?to))
+
+;         (robot-at ?to)
+;         (decrease (battery-level) 10)        
+;     )
+; )
 
 ;SEND DATA
 
@@ -330,7 +365,7 @@
     :precondition (and
         (victim-vitals)
         (not (all-data-sent))
-        (not (abort-mission))
+        ;(not (abort-mission))
         (robot-at ?loc)
         (remap)
         (signal-connection ?loc strong)

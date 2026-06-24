@@ -57,7 +57,9 @@
     (signal-connection room4 poor)
     (signal-connection room5 poor)
     
-    (= (battery-level) 100)
+    (robot-idle)
+    
+    (= (battery-level) 120)
 
 )
 
