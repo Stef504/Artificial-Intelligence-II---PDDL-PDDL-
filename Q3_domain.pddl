@@ -95,7 +95,10 @@
         (not (abort-mission))
         
     )
-    :effect (decrease (robot-scan)(* #t 1))
+    :effect (and 
+        (decrease (robot-scan)(* #t 1))
+        (decrease (battery-level)(* #t 1))
+    )
 )
 
 (:action end-scan
@@ -112,7 +115,7 @@
         (cleared-room ?loc)
         (phase-move)
 
-        (decrease (battery-level)5)
+        ;(decrease (battery-level)5)
     )
 )
 
@@ -290,6 +293,7 @@
     )
     :effect (and 
         (decrease (robot-move) (* #t 1))
+        (decrease (battery-level) (* #t 1.0))
     )
 )
 
@@ -305,7 +309,7 @@
         (not (moving-to ?to))
 
         (robot-at ?to)
-        (decrease (battery-level) 10)
+        ;(decrease (battery-level) 10)
         (phase-scan)
     )
 )
