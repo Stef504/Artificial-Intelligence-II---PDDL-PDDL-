@@ -68,7 +68,7 @@
     
     (= (battery-level) 110)
     (= (victim-health) 110)
-    (= (rescue) 360)
+    (= (rescue) 100)
     (= (robot-move) 10)
     (= (robot-scan) 5)
 

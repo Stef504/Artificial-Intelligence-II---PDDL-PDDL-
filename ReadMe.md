@@ -79,7 +79,7 @@ Scenario 1:
 ```bash
 Battery life = 110
 victim-health = 110
-rescue = 360
+rescue = 100
 ```
 
 - It successfully locates the victim and reports back. 
@@ -88,7 +88,7 @@ Scenario 2:
 ```bash
 Battery Life = 80
 victim-health = 100
-rescue = 360
+rescue = 100
 ```
 
 - Battery runs out before all-data-sent can be achieved.
