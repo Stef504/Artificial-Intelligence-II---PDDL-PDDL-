@@ -59,7 +59,7 @@
     
     (robot-idle)
     
-    (= (battery-level) 120)
+    (= (battery-level) 110)
 
 )
 

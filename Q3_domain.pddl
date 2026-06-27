@@ -114,8 +114,6 @@
 
         (cleared-room ?loc)
         (phase-move)
-
-        ;(decrease (battery-level)5)
     )
 )
 
@@ -309,7 +307,6 @@
         (not (moving-to ?to))
 
         (robot-at ?to)
-        ;(decrease (battery-level) 10)
         (phase-scan)
     )
 )
@@ -334,7 +331,7 @@
     :precondition (and
         (victim-vitals)
         (not (all-data-sent))
-        (not (abort-mission))
+        ;(not (abort-mission))
         (robot-at ?loc)
         (remap)
         (signal-connection ?loc strong)
