@@ -1,0 +1,8 @@
+;;!domain: victim-monitor
+;;!problem: victim-monitor-1
+
+91.00000: (end-move room3)
+91.00000: (send-distress-signal room3)
+
+; Makespan: 91
+; Metric: 91

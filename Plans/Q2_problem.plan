@@ -1,0 +1,21 @@
+;;!domain: explore-building
+;;!problem: explore-building-1
+
+0.00000: (scan room1 blue probability1 lowdb) [2.00000]
+2.00100: (move room1 room2) [5.00000]
+7.00200: (scan room2 orange probability3 lowdb) [2.00000]
+9.00300: (move room2 room3) [5.00000]
+14.00400: (scan room3 yellow probability2 lowdb) [2.00000]
+16.00500: (move room3 room4) [5.00000]
+21.00600: (scan room4 green probability4 lowdb) [2.00000]
+23.00700: (move room4 room5) [5.00000]
+28.00800: (scan room5 red probability5 highdb) [2.00000]
+30.00900: (locate-victim room5 red probability5 highdb) [1.00000]
+31.01000: (victim-health-check-alive room5 high) [1.00000]
+32.01100: (move room5 room4) [5.00000]
+37.01200: (move room4 room3) [5.00000]
+42.01300: (send-distress-signal room3 strong) [1.00000]
+
+; Makespan: 43.013
+; Metric: 43.013
+; States evaluated: 742
