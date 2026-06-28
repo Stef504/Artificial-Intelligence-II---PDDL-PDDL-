@@ -63,11 +63,8 @@
 
 )
 
-(:goal(and
-    (victim-vitals)
+(:goal
     (all-data-sent)
-    
-)
 
 ) 
 
