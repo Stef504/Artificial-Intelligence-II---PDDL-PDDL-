@@ -172,7 +172,7 @@ A further limitation of PDDL/+ is the rigidity of goal states. An example is if 
 
 This behavior completely disobeys the logical sequence of the SAR tactic. The ideal logical sequence consists of first attempting to send the goal while the victim is still alive, then acknowledging that the first goal is unattainable, and finally resorting to the second goal. The second goal would still explicitly explore, detect, and rescue. 
 
-To prevent this entirely, the use of *abort-mission* was implemented as an effect for each of the events presented in the architectural design of PDDL+. Therefore, the processes shown in the architectural design of PDDL+ could not continue if the *abort-mission* became true. 
+To prevent this entirely, the use of *abort-mission* was implemented as an effect for each of the events presented in the architectural design of PDDL+. Therefore, the processes shown in the architectural design of PDDL+ could not continue if the *abort-mission* became true, thereby representing a failure to produce a plan. 
 
 A difference highlighted between PDDL and PDDL+ is that, for the *second instance*, all actions had to be converted into durative actions. If not, the system would duplicate the depletion of the battery; the issue was due to a time conflict created by the planner. For example, the battery must be above 20 at the start of any action. However, since durative actions are used, the effect of depleting the battery does not affect the commencement of the action itself. This is the difference between discrete intervals and continuous state evaluation. As demonstrated, the issue is prevented in PDDL+, where it was able to avoid this scenario due to PDDL+ capabilities.
 
