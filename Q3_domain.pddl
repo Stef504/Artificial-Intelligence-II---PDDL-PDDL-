@@ -331,7 +331,6 @@
     :precondition (and
         (victim-vitals)
         (not (all-data-sent))
-        ;(not (abort-mission))
         (robot-at ?loc)
         (remap)
         (signal-connection ?loc strong)
